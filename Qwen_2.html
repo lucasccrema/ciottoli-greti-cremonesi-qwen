@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🪨 Caccia al Ciottolo - Greti fluviali cremonesi</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: linear-gradient(135deg, #87a96b 0%, #4a6741 50%, #2c3e2d 100%);
+    min-height: 100vh;
+    color: #2c2416;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .container {
+    background: #f5ecd7;
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(139,115,85,0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(101,124,90,0.1) 0%, transparent 50%);
+    max-width: 720px;
+    width: 100%;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(139,115,85,0.3);
+    padding: 35px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #8b7355, #a0826d, #6b8e4e, #8b7355);
+  }
+  h1 {
+    color: #3d2817;
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
+  }
+  .subtitle {
+    text-align: center;
+    color: #6b5640;
+    font-style: italic;
+    margin-bottom: 25px;
+    font-size: 0.95em;
+  }
+  .progress {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 25px;
+  }
+  .progress .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #c9b896;
+    transition: all 0.3s;
+  }
+  .progress .dot.active { background: #6b8e4e; transform: scale(1.3); }
+  .progress .dot.done { background: #3d2817; }
+  .question-card {
+    background: #fffaf0;
+    border: 2px solid #c9b896;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    animation: slideIn 0.4s ease-out;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .question-card h2 {
+    color: #3d2817;
+    font-size: 1.3em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .question-card p {
+    color: #5a4632;
+    line-height: 1.6;
+    margin-bottom: 18px;
+    font-size: 0.98em;
+  }
+  .options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .option-btn {
+    background: linear-gradient(135deg, #fff 0%, #f5ecd7 100%);
+    border: 2px solid #a0826d;
+    color: #3d2817;
+    padding: 14px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95em;
+    text-align: left;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .option-btn:hover {
+    background: linear-gradient(135deg, #6b8e4e 0%, #4a6741 100%);
+    color: #fff;
+    border-color: #3d2817;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+  }
+  .option-btn .icon { font-size: 1.5em; }
+  .result {
+    text-align: center;
+    animation: slideIn 0.5s ease-out;
+  }
+  .result .rock-display {
+    background: linear-gradient(135deg, #3d2817 0%, #5a4632 100%);
+    color: #f5ecd7;
+    padding: 30px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  }
+  .result .rock-name {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #ffd9a8;
+  }
+  .result .rock-category {
+    font-style: italic;
+    opacity: 0.9;
+    margin-bottom: 15px;
+  }
+  .info-box {
+    background: #fffaf0;
+    border-left: 5px solid #6b8e4e;
+    padding: 18px 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+    text-align: left;
+  }
+  .info-box h3 {
+    color: #3d2817;
+    margin-bottom: 8px;
+    font-size: 1.05em;
+  }
+  .info-box p, .info-box li {
+    color: #5a4632;
+    line-height: 1.6;
+    font-size: 0.95em;
+  }
+  .info-box ul { margin-left: 20px; margin-top: 6px; }
+  .mountain-highlight {
+    background: linear-gradient(135deg, #8b7355 0%, #6b5640 100%);
+    color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .mountain-highlight .label {
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.85;
+    margin-bottom: 6px;
+  }
+  .mountain-highlight .place {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #ffd9a8;
+  }
+  .restart-btn {
+    background: linear-gradient(135deg, #6b8e4e 0%, #4a6741 100%);
+    color: #fff;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.25s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+  .restart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  }
+  .intro-icon {
+    font-size: 4em;
+    text-align: center;
+    margin-bottom: 15px;
+    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
+  }
+  .footer {
+    text-align: center;
+    font-size: 0.8em;
+    color: #8b7355;
+    margin-top: 20px;
+    font-style: italic;
+  }
+  @media (max-width: 500px) {
+    .container { padding: 25px 20px; }
+    h1 { font-size: 1.5em; }
+    .options { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🪨 Caccia al Ciottolo</h1>
+  <p class="subtitle">Guida al riconoscimento dei ciottoli dei greti fluviali cremonesi</p>
+  
+  <div class="progress" id="progress"></div>
+  <div id="content"></div>
+  
+  <p class="footer">Basato su "I ciottoli dei greti fluviali cremonesi" – Provincia di Cremona, 1996</p>
+</div>
+
+<script>
+// Database delle rocce con provenienza
+const rocks = {
+  granito: {
+    nome: "Granito",
+    categoria: "Roccia ignea intrusiva",
+    colore: "Grigio chiaro con fondo bianco e radi puntini neri",
+    descrizione: "Roccia granulare formata da quarzo (traslucido), feldspati (biancastri) e miche (lamelle nere). I granuli sono lucenti.",
+    provenienza: {
+      "Adda": ["Alta, media e bassa Valtellina"],
+      "Serio": ["Extrabacinale – probabilmente alta Val Camonica"],
+      "Oglio": ["Alta Val Camonica (massiccio dell'Adamello)"]
+    }
+  },
+  granodiorite: {
+    nome: "Granodiorite (Serizzo ghiandone)",
+    categoria: "Roccia ignea intrusiva",
+    colore: "Grigio chiaro con ampie macchie bianche geometriche",
+    descrizione: "Roccia a grana grossolana con grandi cristalli bianchi sub-rettangolari (feldspati) immersi in una matrice più fine.",
+    provenienza: {
+      "Adda": ["Media e bassa Valtellina"],
+      "Serio": ["Assente"],
+      "Oglio": ["Assente"]
+    }
+  },
+  tonalite: {
+    nome: "Tonalite",
+    categoria: "Roccia ignea intrusiva",
+    colore: "Grigio chiaro con grosse macchie scure a contorno regolare",
+    descrizione: "Roccia granulare a grana medio-grossolana, priva di lucentezza. Tipica del massiccio dell'Adamello.",
+    provenienza: {
+      "Adda": ["Bassa Valtellina"],
+      "Serio": ["Extrabacinale"],
+      "Oglio": ["Alta Val Camonica – Passo del Tonale, Adamello"]
+    }
+  },
+  quarzodiorite: {
+    nome: "Quarzodiorite",
+    categoria: "Roccia ignea intrusiva",
+    colore: "Grigio scuro con macchiette allungate nere",
+    descrizione: "Roccia a grana fine con piccoli aghi nerastri (anfiboli) su fondo biancastro.",
+    provenienza: {
+      "Adda": ["Bassa Valtellina"],
+      "Serio": ["Extrabacinale"],
+      "Oglio": ["Alta Val Camonica"]
+    }
+  },
+  diorite: {
+    nome: "Diorite",
+    categoria: "Roccia ignea intrusiva",
+    colore: "Grigio scuro con numerosissime macchiette scure",
+    descrizione: "Roccia a grana fine, molto dura, con granuli biancastri e neri equidimensionali. A volte con lievi sfumature verdastre.",
+    provenienza: {
+      "Adda": ["Alta Valtellina e Valsassina"],
+      "Serio": ["Assente"],
+      "Oglio": ["Assente"]
+    }
+  },
+  porfirite: {
+    nome: "Porfirite",
+    categoria: "Roccia ignea filoniana",
+    colore: "Grigio scuro con macchie bianche a contorno regolare",
+    descrizione: "Massa di fondo grigia costellata da grandi cristalli bianchi sub-rettangolari (plagioclasio) disordinatamente distribuiti.",
+    provenienza: {
+      "Adda": ["Alta e media Valtellina"],
+      "Serio": ["Alta Val Seriana"],
+      "Oglio": ["Val Camonica e zona del Lago d'Iseo"]
+    }
+  },
+  porfido: {
+    nome: "Porfido riolitico",
+    categoria: "Roccia ignea effusiva",
+    colore: "Rosso scuro o bruno, con rade macchie bianche",
+    descrizione: "Roccia quasi omogenea, spesso con piccoli vuoti. Massa di fondo rossastra con granuli bianchi. Età: ~200 milioni di anni (Permiano).",
+    provenienza: {
+      "Adda": ["Valsassina e Val Brembana"],
+      "Serio": ["Alta Val Seriana"],
+      "Oglio": ["Alta, media e bassa Val Camonica"]
+    }
+  },
+  arenaria: {
+    nome: "Arenaria",
+    categoria: "Roccia sedimentaria detritica",
+    colore: "Variabile: rossastro, verde, grigio scuro, marrone",
+    descrizione: "Roccia granulare formata da granuli appena visibili, cementati da calcite. Si riga con la punta d'acciaio.",
+    provenienza: {
+      "Adda": ["Valsassina, Val Brembana, zona pedemontana"],
+      "Serio": ["Alta Val Seriana, zona pedemontana"],
+      "Oglio": ["Media e bassa Val Camonica, Lago d'Iseo"]
+    }
+  },
+  conglomerato: {
+    nome: "Conglomerato (Puddinga / Verrucano)",
+    categoria: "Roccia sedimentaria detritica",
+    colore: "Rossastro prevalente, con clasti di vari colori",
+    descrizione: "Roccia formata da clasti arrotondati visibili (>2 mm) cementati da calcite. Età: ~170 milioni di anni (fine Permiano).",
+    provenienza: {
+      "Adda": ["Zona del Lago di Como, Valsassina, Val Brembana"],
+      "Serio": ["Alta Val Seriana"],
+      "Oglio": ["Media e bassa Val Camonica"]
+    }
+  },
+  calcare: {
+    nome: "Calcare",
+    categoria: "Roccia sedimentaria chimica",
+    colore: "Grigio (chiaro o scuro), bianco-rosato, bruno-giallastro",
+    descrizione: "Roccia omogenea che reagisce fortemente all'acido cloridrico (effervescenza). Composta principalmente da calcite (>90%).",
+    provenienza: {
+      "Adda": ["Alta Valtellina, Valsassina, Val Brembana, Lago di Como"],
+      "Serio": ["Media e bassa Val Seriana"],
+      "Oglio": ["Media e bassa Val Camonica, Lago d'Iseo"]
+    }
+  },
+  selce: {
+    nome: "Selce",
+    categoria: "Roccia sedimentaria chimica",
+    colore: "Rossastro o nero",
+    descrizione: "Roccia omogenea con superficie molto liscia e lucida. Se percossa si disgrega in granuli spigolosi. Effervescenza debole (solo nelle microfratture calcitiche).",
+    provenienza: {
+      "Adda": ["Zona pedemontana"],
+      "Serio": ["Zona pedemontana"],
+      "Oglio": ["Zona pedemontana"]
+    }
+  },
+  gneiss: {
+    nome: "Gneiss",
+    categoria: "Roccia metamorfica di alto grado",
+    colore: "Grigio con bande bianche e argentee/nere alternate",
+    descrizione: "Roccia chiaramente scistosa con bande parallele. A volte ondulate (gneiss pieghe ttati) o con dilatazioni bianche (gneiss occhiadini).",
+    provenienza: {
+      "Adda": ["Valtellina, Valsassina, Val Brembana, Lago di Como"],
+      "Serio": ["Extrabacinale"],
+      "Oglio": ["Alta, media e bassa Val Camonica"]
+    }
+  },
+  serpentinite: {
+    nome: "Serpentinite",
+    categoria: "Roccia metamorfica (ofiolite)",
+    colore: "Nero-verdastro scuro",
+    descrizione: "Roccia a grosse macchie, superficie molto liscia e lucida. Molto dura. Fa parte del gruppo delle ofioliti.",
+    provenienza: {
+      "Adda": ["Val Malenco"],
+      "Serio": ["Extrabacinale – Val Malenco"],
+      "Oglio": ["Assente"]
+    }
+  },
+  serpentinoscisto: {
+    nome: "Serpentinoscisto",
+    categoria: "Roccia metamorfica (ofiolite)",
+    colore: "Verdastro con macchie nere",
+    descrizione: "Roccia scistosa a grosse macchie, superfici molto lisce e scorrevoli al tatto. Può contenere fibre di amianto.",
+    provenienza: {
+      "Adda": ["Val Malenco"],
+      "Serio": ["Extrabacinale – Val Malenco"],
+      "Oglio": ["Assente"]
+    }
+  },
+  quarzite: {
+    nome: "Quarzite",
+    categoria: "Roccia metamorfica di alto grado",
+    colore: "Bianco o giallastro, leggermente traslucido",
+    descrizione: "Roccia omogenea, molto dura, composta al 100% da quarzo. Spesso con piccole cavità (cariature). Sfregata emana odore solfureo.",
+    provenienza: {
+      "Adda": ["Media Valtellina"],
+      "Serio": ["Extrabacinale – media Valtellina?"],
+      "Oglio": ["Alta Val Camonica"]
+    }
+  }
+};
+
+// Stato del gioco
+let state = {
+  river: null,
+  answers: {},
+  step: 0
+};
+
+const totalSteps = 6; // fiume + 5 domande
+
+function renderProgress() {
+  const prog = document.getElementById('progress');
+  prog.innerHTML = '';
+  for (let i = 0; i < totalSteps; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    if (i < state.step) dot.classList.add('done');
+    if (i === state.step) dot.classList.add('active');
+    prog.appendChild(dot);
+  }
+}
+
+function showIntro() {
+  state = { river: null, answers: {}, step: 0 };
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <div class="intro-icon">🏔️ 🪨 🌊</div>
+      <h2 style="justify-content:center; text-align:center;">Benvenuto, esploratore!</h2>
+      <p>Hai appena raccolto un ciottolo lungo il greto di un fiume cremonese. Dietro ogni sasso si nasconde una storia millenaria: una montagna da cui si è staccato, un viaggio di decine o centinaia di chilometri trasportato dalla corrente.</p>
+      <p>Attraverso alcune semplici osservazioni, ti guiderò nel <strong>riconoscimento della roccia</strong> e ti aiuterò a risalire alla <strong>valle alpina</strong> da cui proviene.</p>
+      <p style="margin-top:15px;"><strong>Ti serviranno:</strong> il ciottolo, una lente d'ingrandimento (opzionale), una punta d'acciaio (un chiodo) e, se ce l'hai, qualche goccia di acido (muriatico o vinegar concentrato).</p>
+      <div class="options">
+        <button class="option-btn" onclick="askRiver()">
+          <span class="icon">▶️</span>
+          <span>Iniziamo l'indagine</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function askRiver() {
+  state.step = 1;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">🌊</span> Dove hai trovato il ciottolo?</h2>
+      <p>La provenienza del ciottolo dipende dal fiume che lo ha trasportato. Ogni bacino montano ha una sua "firma" litologica. Scegli il fiume:</p>
+      <div class="options">
+        <button class="option-btn" onclick="setRiver('Adda')">
+          <span class="icon">💧</span>
+          <div><strong>Fiume Adda</strong><br><small style="opacity:0.8;">Tra Rivolta d'Adda e Formigara</small></div>
+        </button>
+        <button class="option-btn" onclick="setRiver('Serio')">
+          <span class="icon">💧</span>
+          <div><strong>Fiume Serio</strong><br><small style="opacity:0.8;">Tra Castelgabbiano e Ripalta Arpina</small></div>
+        </button>
+        <button class="option-btn" onclick="setRiver('Oglio')">
+          <span class="icon">💧</span>
+          <div><strong>Fiume Oglio</strong><br><small style="opacity:0.8;">Tra Soncino e Castelvisconti</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function setRiver(r) {
+  state.river = r;
+  askAcid();
+}
+
+function askAcid() {
+  state.step = 2;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">🧪</span> Prova 1: Acido o punta d'acciaio</h2>
+      <p>Metti una goccia di acido (o gratta con un chiodo) su una superficie fresca del ciottolo. <strong>Reagisce con effervescenza?</strong> (Oppure: il chiodo lascia un solco?)</p>
+      <p style="font-size:0.88em; color:#6b5640;">💡 <em>Se il ciottolo "frigge" come una bibita gassata, è calcare. Se fa pochissima effervescenza ma è liscio e lucido, potrebbe essere selce.</em></p>
+      <div class="options">
+        <button class="option-btn" onclick="setAnswer('acid','forte')">
+          <span class="icon">💥</span>
+          <div><strong>Effervescenza forte</strong><br><small style="opacity:0.8;">Frigge vistosamente</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('acid','debole')">
+          <span class="icon">💨</span>
+          <div><strong>Effervescenza debole</strong><br><small style="opacity:0.8;">Pochissime bollicine</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('acid','no')">
+          <span class="icon">❌</span>
+          <div><strong>Nessuna reazione</strong><br><small style="opacity:0.8;">Né bolle, né solchi</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function setAnswer(key, val) {
+  state.answers[key] = val;
+  
+  if (key === 'acid') {
+    if (val === 'forte') { identify('calcare'); return; }
+    if (val === 'debole') { identify('selce'); return; }
+    askGranular();
+  }
+  else if (key === 'granular') {
+    if (val === 'yes') { askOriented(); }
+    else { askHomogeneous(); }
+  }
+  else if (key === 'oriented') {
+    if (val === 'yes') { identify('gneiss'); }
+    else { askColor(); }
+  }
+  else if (key === 'homogeneous') {
+    if (val === 'yes') { askBrownRed(); }
+    else { askSpots(); }
+  }
+  else if (key === 'brown') {
+    if (val === 'yes') { identify('porfido'); }
+    else { identify('porfirite'); }
+  }
+  else if (key === 'spots') {
+    if (val === 'yes') { identify('porfirite'); }
+    else { askClasts(); }
+  }
+  else if (key === 'clasts') {
+    if (val === 'big') { identify('conglomerato'); }
+    else if (val === 'small') { identify('arenaria'); }
+    else { askIntrusive(); }
+  }
+  else if (key === 'intrusive') {
+    if (val === 'light') { askBigCrystals(); }
+    else if (val === 'dark') { askFineGrain(); }
+    else { askGreenBlack(); }
+  }
+  else if (key === 'bigcrystals') {
+    if (val === 'yes') { identify('granodiorite'); }
+    else { identify('granito'); }
+  }
+  else if (key === 'finegrain') {
+    if (val === 'needles') { identify('quarzodiorite'); }
+    else if (val === 'darkspots') { identify('tonalite'); }
+    else { identify('diorite'); }
+  }
+  else if (key === 'greenblack') {
+    if (val === 'schistose') { identify('serpentinoscisto'); }
+    else { identify('serpentinite'); }
+  }
+}
+
+function askGranular() {
+  state.step = 3;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">🔍</span> Prova 2: Aspetto granulare?</h2>
+      <p>Osserva una superficie fresca (se necessario, rompi il ciottolo con un martello). <strong>Vedi tanti granuli/cristalli distinti</strong> di colori diversi, come zucchero grosso?</p>
+      <p style="font-size:0.88em; color:#6b5640;">💡 <em>Bagna il ciottolo: la struttura diventa più evidente.</em></p>
+      <div class="options">
+        <button class="option-btn" onclick="setAnswer('granular','yes')">
+          <span class="icon">✨</span>
+          <div><strong>Sì, granulare</strong><br><small style="opacity:0.8;">Tanti granuli visibili</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('granular','no')">
+          <span class="icon">🪨</span>
+          <div><strong>No, omogeneo</strong><br><small style="opacity:0.8;">Massa compatta uniforme</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function askOriented() {
+  state.step = 4;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">📐</span> Prova 3: I granuli sono orientati?</h2>
+      <p>I cristalli sono disposti <strong>in bande parallele</strong> (come gli strati di una cipolla o di un marmo rigato)? Oppure sono distribuiti <strong>senza ordine</strong>?</p>
+      <p style="font-size:0.88em; color:#6b5640;">💡 <em>Guarda il ciottolo di profilo: se vedi bande regolari alternate chiare/scure, è una struttura orientata (scistosità).</em></p>
+      <div class="options">
+        <button class="option-btn" onclick="setAnswer('oriented','yes')">
+          <span class="icon">📊</span>
+          <div><strong>Sì, bande parallele</strong><br><small style="opacity:0.8;">Struttura orientata</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('oriented','no')">
+          <span class="icon">🎲</span>
+          <div><strong>No, disordinati</strong><br><small style="opacity:0.8;">Granuli senza direzione</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function askHomogeneous() {
+  state.step = 4;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">🎨</span> Prova 3: Aspetto e colore</h2>
+      <p>La roccia è <strong>completamente omogenea</strong> (massa uniforme senza granuli distinti)? E di che colore è?</p>
+      <div class="options">
+        <button class="option-btn" onclick="setAnswer('homogeneous','yes')">
+          <span class="icon">🔴</span>
+          <div><strong>Sì, omogenea</strong><br><small style="opacity:0.8;">Massa uniforme, magari con piccoli vuoti</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('homogeneous','spots')">
+          <span class="icon">⚪</span>
+          <div><strong>Fondo scuro con macchie bianche regolari</strong><br><small style="opacity:0.8;">Come "occhi" o rombi bianchi</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('homogeneous','clasts')">
+          <span class="icon">🧩</span>
+          <div><strong>Non è omogenea: vedo "sassi nel cemento"</strong><br><small style="opacity:0.8;">Clasti di varie dimensioni</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function askBrownRed() {
+  state.step = 5;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">🎨</span> Prova 4: Di che colore?</h2>
+      <p>La massa di fondo è <strong>rosso scuro / bruna</strong>, oppure di altro colore?</p>
+      <div class="options">
+        <button class="option-btn" onclick="setAnswer('brown','yes')">
+          <span class="icon">🟤</span>
+          <div><strong>Rosso scuro / bruno</strong><br><small style="opacity:0.8;">Con rade macchie bianche</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('brown','no')">
+          <span class="icon">⚫</span>
+          <div><strong>Altro colore</strong><br><small style="opacity:0.8;">Grigio, nero, verdastro...</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function askSpots() {
+  state.step = 5;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">⚪</span> Prova 4: Le macchie bianche</h2>
+      <p>Le macchie bianche hanno un <strong>contorno geometrico regolare</strong> (quasi rettangolare)?</p>
+      <div class="options">
+        <button class="option-btn" onclick="setAnswer('spots','yes')">
+          <span class="icon">🔲</span>
+          <div><strong>Sì, contorno regolare</strong><br><small style="opacity:0.8;">Come "occhi" o rombi ben definiti</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('spots','no')">
+          <span class="icon">🌀</span>
+          <div><strong>No, contorno irregolare</strong><br><small style="opacity:0.8;">Forme casuali</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function askClasts() {
+  state.step = 5;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">🧩</span> Prova 4: I clasti inclusi</h2>
+      <p>I "sassi nel cemento" (clasti) sono <strong>ben visibili ad occhio nudo</strong> (>2 mm) o sono <strong>fini come sabbia grossa</strong>?</p>
+      <div class="options">
+        <button class="option-btn" onclick="setAnswer('clasts','big')">
+          <span class="icon">🪨</span>
+          <div><strong>Grandi e visibili</strong><br><small style="opacity:0.8;">Sassetti distinguibili (>2 mm)</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('clasts','small')">
+          <span class="icon">⏳</span>
+          <div><strong>Finissimi</strong><br><small style="opacity:0.8;">Come sabbia grossa, granulosità fine</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('clasts','none')">
+          <span class="icon">🔬</span>
+          <div><strong>Non vedo veri clasti</strong><br><small style="opacity:0.8;">Forse è una roccia ignea...</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function askIntrusive() {
+  state.step = 5;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">🎨</span> Prova 5: Colore complessivo</h2>
+      <p>La roccia, a colpo d'occhio, è <strong>chiara</strong> (grigio chiaro / bianco), <strong>scura</strong> (grigio scuro / nera) o <strong>verde/nera</strong>?</p>
+      <div class="options">
+        <button class="option-btn" onclick="setAnswer('intrusive','light')">
+          <span class="icon">⚪</span>
+          <div><strong>Chiara</strong><br><small style="opacity:0.8;">Grigio chiaro / bianco</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('intrusive','dark')">
+          <span class="icon">⚫</span>
+          <div><strong>Scura</strong><br><small style="opacity:0.8;">Grigio scuro, con punteggiatura</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('intrusive','green')">
+          <span class="icon">🟢</span>
+          <div><strong>Verde / nero-verdastra</strong><br><small style="opacity:0.8;">Tipica delle ofioliti</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function askBigCrystals() {
+  state.step = 6;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">💎</span> Prova finale: Cristalli grandi</h2>
+      <p>Vedi <strong>grandi cristalli bianchi allungati</strong> (anche 1-2 cm), ben visibili ad occhio nudo, immersi in una matrice più fine?</p>
+      <div class="options">
+        <button class="option-btn" onclick="setAnswer('bigcrystals','yes')">
+          <span class="icon">📏</span>
+          <div><strong>Sì, grossi cristalli bianchi</strong><br><small style="opacity:0.8;">Macchie bianche geometriche evidenti</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('bigcrystals','no')">
+          <span class="icon">🔹</span>
+          <div><strong>No, granuli tutti simili</strong><br><small style="opacity:0.8;">Grana uniforme, puntini neri e chiari</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function askFineGrain() {
+  state.step = 6;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">🔬</span> Prova finale: Forma dei granuli scuri</h2>
+      <p>I granuli/cristalli scuri che vedi sono <strong>allungati come aghi</strong>, <strong>tondeggianti a contorno regolare</strong>, o <strong>equidimensionati e numerosi</strong>?</p>
+      <div class="options">
+        <button class="option-btn" onclick="setAnswer('finegrain','needles')">
+          <span class="icon">📍</span>
+          <div><strong>Aghi allungati</strong><br><small style="opacity:0.8;">Piccoli aghi neri (anfiboli)</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('finegrain','darkspots')">
+          <span class="icon">⚫</span>
+          <div><strong>Grosse macchie scure regolari</strong><br><small style="opacity:0.8;">Pochi ma grandi</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('finegrain','numerous')">
+          <span class="icon">•••</span>
+          <div><strong>Numerosissime macchiette scure</strong><br><small style="opacity:0.8;">Punteggiatura fitta</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function askGreenBlack() {
+  state.step = 6;
+  renderProgress();
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <h2><span class="icon">🟢</span> Prova finale: Superficie</h2>
+      <p>La superficie è <strong>liscia e scorrevole come sapone</strong> (struttura scistosa), oppure <strong>liscia ma massiccia</strong> (a grosse macchie)?</p>
+      <div class="options">
+        <button class="option-btn" onclick="setAnswer('greenblack','schistose')">
+          <span class="icon">🧼</span>
+          <div><strong>Scorrevole / scistosa</strong><br><small style="opacity:0.8;">Si sfoglia, untuosa al tatto</small></div>
+        </button>
+        <button class="option-btn" onclick="setAnswer('greenblack','massive')">
+          <span class="icon">🪨</span>
+          <div><strong>Massiccia, grossolanamente zonata</strong><br><small style="opacity:0.8;">Lucida ma compatta</small></div>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function identify(rockKey) {
+  state.step = totalSteps;
+  renderProgress();
+  const rock = rocks[rockKey];
+  const prov = rock.provenienza[state.river];
+  const provList = prov.filter(p => p !== "Assente");
+  
+  let mountainHTML = '';
+  if (provList.length === 0) {
+    mountainHTML = `
+      <div class="mountain-highlight">
+        <div class="label">⚠️ Attenzione</div>
+        <div class="place">Litotipo non atteso nel F. ${state.river}</div>
+        <p style="margin-top:10px; font-size:0.9em;">Questo tipo di roccia di solito non si trova nel greto del ${state.river}. Potrebbe trattarsi di un "inquinamento litologico" (un sasso portato dall'uomo) oppure di un campione molto raro. Prova a ricontrollare le caratteristiche!</p>
+      </div>
+    `;
+  } else {
+    mountainHTML = `
+      <div class="mountain-highlight">
+        <div class="label">🏔️ La montagna d'origine</div>
+        <div class="place">${provList[0]}</div>
+        ${provList.length > 1 ? `<p style="margin-top:8px; font-size:0.9em;">Altre possibili zone: ${provList.slice(1).join(', ')}</p>` : ''}
+      </div>
+    `;
+  }
+  
+  document.getElementById('content').innerHTML = `
+    <div class="result">
+      <div class="rock-display">
+        <div style="font-size:3em; margin-bottom:10px;">🪨</div>
+        <div class="rock-name">${rock.nome}</div>
+        <div class="rock-category">${rock.categoria}</div>
+      </div>
+      
+      <div class="info-box">
+        <h3>🎨 Caratteristiche</h3>
+        <p><strong>Colore:</strong> ${rock.colore}</p>
+        <p style="margin-top:8px;"><strong>Descrizione:</strong> ${rock.descrizione}</p>
+      </div>
+      
+      <div class="info-box">
+        <h3>🌊 Il viaggio del tuo ciottolo</h3>
+        <p>Il tuo ciottolo è stato strappato dalle pareti rocciose delle <strong>Alpi lombarde</strong> dai ghiacciai quaternari e poi trasportato a valle dal fiume ${state.river}, che lo ha modellato e levigato per decine o centinaia di chilometri fino a depositarlo sul greto dove l'hai trovato.</p>
+      </div>
+      
+      ${mountainHTML}
+      
+      <button class="restart-btn" onclick="showIntro()">🔄 Prova con un altro ciottolo</button>
+    </div>
+  `;
+  
+  // Scroll in alto
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Avvio
+showIntro();
+</script>
+</body>
+</html>
